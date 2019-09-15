@@ -1,21 +1,18 @@
 package smartshare.commongateway.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import smartshare.commongateway.services.AuthenticationService;
-
-import java.util.Map;
+import smartshare.commongateway.services.CommonGatewayService;
 
 @RestController
 @RequestMapping(path = "/",produces = "application/json")
 @CrossOrigin(origins = "*")
-public class AuthenticationController {
+public class CommonGatewayController {
 
     @Autowired
-    AuthenticationService service;
+    CommonGatewayService service;
 
     @GetMapping(value="/")
     public String defaultMethod(RequestEntity request){
@@ -36,18 +33,14 @@ public class AuthenticationController {
             value = "**",
             method = {RequestMethod.GET, RequestMethod.POST}
     )
-    public ResponseEntity<Map<String, String>> testPostMethod(RequestEntity request) {
+    public ResponseEntity testPostMethod(RequestEntity request) {
         System.out.println("inside");
         System.out.println(request);
 
 //        Have to sort out on HTTP status issue for correct and error result
 
-        return new ResponseEntity<>( service.processRequests(request),HttpStatus.OK);
+        return service.processRequests(request);
     }
 
-//    @PostMapping(path = "/signUp", consumes = "application/json", produces = "application/json")
-//    public void addMember(@RequestBody RequestEntity request ) {
-//        System.out.println("inside");
-//        System.out.println(request);
-//    }
+
 }

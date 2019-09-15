@@ -7,10 +7,11 @@ import org.springframework.web.client.RestTemplate;
 
 
 @Configuration
-public class AuthenticationConfiguration {
+public class CommonGatewayConfiguration {
 
     @Bean
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
+
 }
