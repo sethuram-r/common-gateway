@@ -1,4 +1,4 @@
-package smartshare.commongateway.model;
+package smartshare.newcommongateway.model;
 
 public class Status {
 

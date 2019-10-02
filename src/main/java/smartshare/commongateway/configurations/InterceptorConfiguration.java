@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import smartshare.commongateway.interceptor.RequestSourceCheckerInterceptor;
 
+
 @Configuration
 public class InterceptorConfiguration implements WebMvcConfigurer {
 
