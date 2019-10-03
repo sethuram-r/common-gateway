@@ -8,6 +8,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import smartshare.commongateway.constant.ResourcePathToBeExcluded;
+import smartshare.commongateway.exception.ExpiredJwtTokenException;
+import smartshare.commongateway.exception.InvalidJwtTokenException;
+import smartshare.commongateway.exception.TokenNotFoundException;
 import smartshare.commongateway.model.CustomUserDetail;
 import smartshare.commongateway.services.JWTService;
 import smartshare.commongateway.services.UserSessionDetailsService;
@@ -30,57 +34,39 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JWTService jwtService;
 
-//    private Boolean checkUrlToBeProcessedInExcludedUrlsList(String urlToBeProcessed){
-//        for (UrlsNotToBeAddedWithJwtToken url: UrlsNotToBeAddedWithJwtToken.values())
-//            if (urlToBeProcessed.contains(url.getUrlsActualRepresentation())) {
-//                return Boolean.TRUE;
-//            }
-//        return Boolean.FALSE;
-//    }
-
     @Override
     protected void doFilterInternal
             (HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ExpiredJwtTokenException, TokenNotFoundException {
         log.info("Inside JwtFilter");
-        httpServletRequest.getServletPath();
-        System.out.println("url---------->" + httpServletRequest.getRequestURL().toString());
-        if (!(httpServletRequest.getServletPath().contains(RESOURCE_PATH_TO_EXCLUDE))) {
+        String userNameFromToken;
+        String jwtTokenPresentInRequest;
 
-//        if (!checkUrlToBeProcessedInExcludedUrlsList(httpServletRequest.getRequestURL().toString())) {
-            System.out.println("httpServletRequest--------->" + httpServletRequest.getHeader(JWTService.TOKEN_NAME));
-            final String requestTokenHeader = httpServletRequest.getHeader(JWTService.TOKEN_NAME);
-
-            String userName = null;
-            String jwtToken = null;
-
-            // JWT Token is in the form "Bearer token". Remove Bearer word and get
-
-            if (requestTokenHeader != null && requestTokenHeader.startsWith(JWTService.TOKEN_PREFIX)) {
-                jwtToken = requestTokenHeader.substring(6);
+        if (!(httpServletRequest.getServletPath().contains(ResourcePathToBeExcluded.AUTHENTICATE.getUrlsActualRepresentation()))) {
+            final String authenticationTokenHeader = httpServletRequest.getHeader(JWTService.TOKEN_NAME);
+            if (null != authenticationTokenHeader && authenticationTokenHeader.startsWith(JWTService.TOKEN_PREFIX)) {
+                // JWT Token is in the form "Bearer token". Remove Bearer word and get
+                jwtTokenPresentInRequest = authenticationTokenHeader.substring(JWTService.TOKEN_PREFIX.length());
                 try {
-                    userName = jwtService.getUsernameFromToken(jwtToken);
-                    System.out.println("userName------------" + userName);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Unable to get JWT Token");
+                    userNameFromToken = jwtService.getUsernameFromToken(jwtTokenPresentInRequest);
+                    if (userNameFromToken == null) throw new InvalidJwtTokenException();
                 } catch (ExpiredJwtException e) {
-                    System.out.println("JWT Token has expired");
+                    throw new ExpiredJwtTokenException();
+                } catch (Exception e) {
+                    throw new InvalidJwtTokenException();
                 }
             } else {
-                log.warn("JWT Token does not begin with Bearer String");
+                throw new TokenNotFoundException();
+
             }
 
-            System.out.println("seurity context-----" + SecurityContextHolder.getContext().getAuthentication());
-            // Once we get the token validate it.
-            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                System.out.println("inside-------2-----");
-                CustomUserDetail userDetails = this.jwtUserDetailsService.loadUserByUsername(userName);
+            /* Check if the user is authenticated already with spring security context in the form of principal object */
 
-                System.out.println("userDetails-------" + userDetails);
+            if (null == SecurityContextHolder.getContext().getAuthentication()) {
+                CustomUserDetail userDetails = this.jwtUserDetailsService.loadUserByUsername(userNameFromToken);
 
                 // if token is valid configure Spring Security to manually set authentication
-
-                if (jwtService.validateToken(jwtToken, userDetails)) {
+                if (jwtService.validateToken(jwtTokenPresentInRequest, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
@@ -88,10 +74,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     // After setting the Authentication in the context, we specify that the current user is authenticated. So it passes the
                     // Spring Security Configurations successfully.
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    System.out.println("security passed-------");
+                } else {
+                    throw new InvalidJwtTokenException();
                 }
             }
-
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
 

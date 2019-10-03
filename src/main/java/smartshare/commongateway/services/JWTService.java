@@ -3,6 +3,7 @@ package smartshare.commongateway.services;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import smartshare.commongateway.model.CustomUserDetail;
@@ -11,6 +12,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+
+@Slf4j
 @Service
 public class JWTService {
 
@@ -30,17 +33,12 @@ public class JWTService {
 
 
     private Claims getAllClaimsFromToken(String token) {
-        this.claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-        return this.claims;
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
 
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
-        System.out.println("Claims-------->" + claims);
-
-        System.out.println(this.claims.get("sessionId"));
-        System.out.println(this.claims.get("userName"));
         return claimsResolver.apply(claims);
     }
 
@@ -54,36 +52,26 @@ public class JWTService {
     }
 
 
-    //retrieve username from jwt token
-    public String getUsernameFromToken(String jwtToken) {
-        System.out.println("claims----------->" + this.claims);
-//        return getAllClaimsFromToken(jwtToken).get("userName").toString();
+    private String getStoredCustomClaimsFromToken(String jwtToken, String customClaim) {
         if (null == this.claims) {
-            getAllClaimsFromToken(jwtToken);
-            return this.claims.get("userName").toString();
+            this.claims = getAllClaimsFromToken(jwtToken);
         }
-        return this.claims.get("userName").toString();
+        return this.claims.get(customClaim).toString();
 
+    }
+
+    public String getUsernameFromToken(String jwtToken) {
+        return getStoredCustomClaimsFromToken(jwtToken, "userName");
 
     }
 
     private String getSessionIdFromToken(String jwtToken) {
-        if (null == this.claims.get("sessionId")) {
-            getAllClaimsFromToken(jwtToken);
-            return this.claims.get("sessionId").toString();
-        }
-        return this.claims.get("sessionId").toString();
+        return getStoredCustomClaimsFromToken(jwtToken, "sessionId");
     }
 
-
     public Boolean validateToken(String token, CustomUserDetail userDetails) {
-        System.out.println("userDetails--------" + userDetails);
-        final String username = getUsernameFromToken(token);
-        final String sessionId = getSessionIdFromToken(token);
-        System.out.println(sessionId.equals(userDetails.getSessionId()));
-        System.out.println(username.equals(userDetails.getUsername()));
-        System.out.println(!isTokenExpired(token));
-        return (sessionId.equals(userDetails.getSessionId()) && username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        log.info("Validating Token");
+        return (getSessionIdFromToken(token).equals(userDetails.getSessionId()) && getUsernameFromToken(token).equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
 
