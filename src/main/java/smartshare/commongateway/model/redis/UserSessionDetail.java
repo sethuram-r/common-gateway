@@ -1,16 +1,17 @@
 package smartshare.commongateway.model.redis;
 
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.Map;
 
+@NoArgsConstructor
 @RedisHash(timeToLive = 100, value = "users")
 public class UserSessionDetail {
 
     @Id
-    private String id;
     @Indexed
     private String userName;
     @Indexed
@@ -22,9 +23,6 @@ public class UserSessionDetail {
         this.userName = body.get("userName").toString();
         this.sessionId = body.get("sessionId").toString();
         this.role = body.get("role").toString();
-    }
-
-    public UserSessionDetail() {
     }
 
     public String getUserName() {

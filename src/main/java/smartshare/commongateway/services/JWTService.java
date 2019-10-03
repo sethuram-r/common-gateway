@@ -53,11 +53,8 @@ public class JWTService {
 
 
     private String getStoredCustomClaimsFromToken(String jwtToken, String customClaim) {
-        if (null == this.claims) {
-            this.claims = getAllClaimsFromToken(jwtToken);
-        }
+        this.claims = getAllClaimsFromToken(jwtToken);
         return this.claims.get(customClaim).toString();
-
     }
 
     public String getUsernameFromToken(String jwtToken) {
