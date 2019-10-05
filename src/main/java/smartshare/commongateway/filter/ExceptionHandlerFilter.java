@@ -20,13 +20,10 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (TokenNotFoundException exception) {
-            System.out.println("TokenNotFoundException");
             response.sendError(HttpStatus.PRECONDITION_REQUIRED.value(), exception.getMessage());
         } catch (InvalidJwtTokenException exception) {
-            System.out.println("InvalidJwtTokenException");
             response.sendError(HttpStatus.PRECONDITION_FAILED.value(), exception.getMessage());
         } catch (ExpiredJwtTokenException exception) {
-            System.out.println("ExpiredJwtTokenException");
             response.sendError(HttpStatus.PRECONDITION_FAILED.value(), exception.getMessage());
         }
     }

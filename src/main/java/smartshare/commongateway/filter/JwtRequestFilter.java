@@ -26,8 +26,6 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private static final String RESOURCE_PATH_TO_EXCLUDE = "/authenticate";
-
     @Autowired
     private UserSessionDetailsService jwtUserDetailsService;
 
@@ -59,6 +57,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 throw new TokenNotFoundException();
 
             }
+
+            // Have to check security context how it works...
+
+            System.out.println( "security context-------" + SecurityContextHolder.getContext().getAuthentication() );
 
             /* Check if the user is authenticated already with spring security context in the form of principal object */
 

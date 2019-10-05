@@ -24,15 +24,6 @@ public class CommonGatewayController {
         return "Hello !";
     }
 
-//    @GetMapping(value="**")
-//    public ResponseEntity<Map<String, String>> testMethod(RequestEntity request){
-//        System.out.println("inside");
-//        System.out.println(request);
-//
-////        Have to sort out on HTTP status issue for correct and error result
-//
-//        return new ResponseEntity<>( service.processRequests(request),HttpStatus.OK);
-//    }
 
     @RequestMapping(
             value = "**",
@@ -40,7 +31,6 @@ public class CommonGatewayController {
     )
     public ResponseEntity forwardPostRequestsToServiceHandlers(RequestEntity request) {
         log.info("In forwardPostRequestsToRespectiveServiceHandlers");
-        System.out.println(request);
         return service.forwardPostRequestsToRespectiveServiceHandlers(request);
     }
 }
