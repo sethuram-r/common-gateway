@@ -1,0 +1,19 @@
+auth0:
+  audience: smartshare-api
+---
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://smartshare.eu.auth0.com/
+---
+routes:
+  servers:
+    - name: coreserver
+      uri: http://localhost:8084
+    - name: administrationserver
+      uri: http://localhost:8085
+    - name: lockserver
+      uri: http://localhost:8083
+---
