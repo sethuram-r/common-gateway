@@ -16,8 +16,13 @@ import smartshare.newcommongateway.services.CommonGatewayService;
 @RequestMapping(path = "/*/", produces = "application/json")
 public class CommonGatewayController {
 
-    @Autowired
+
     CommonGatewayService service;
+
+    @Autowired
+    public CommonGatewayController(CommonGatewayService service) {
+        this.service = service;
+    }
 
     @GetMapping(value = "/hello")
     public String defaultMethod(RequestEntity request) {
@@ -27,10 +32,11 @@ public class CommonGatewayController {
 
     @RequestMapping(
             value = "**",
-            method = {RequestMethod.PUT, RequestMethod.POST, RequestMethod.GET, RequestMethod.DELETE}
+            method = {RequestMethod.DELETE, RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT}
     )
     public ResponseEntity forwardRequests(RequestEntity request) {
         log.info( "In forwardRequests" );
+        System.out.println( request.getUrl() );
         return service.forwardRequests( request );
     }
 

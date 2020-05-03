@@ -18,9 +18,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuer;
 
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
-
+        http.cors();
         http.authorizeRequests()
 //                    .mvcMatchers("/api/public").permitAll()
                 .mvcMatchers( "/**" ).authenticated()
