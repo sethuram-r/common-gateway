@@ -36,7 +36,7 @@ public class CommonGatewayController {
     )
     public ResponseEntity forwardRequests(RequestEntity request) {
         log.info( "In forwardRequests" );
-        System.out.println( request.getUrl() );
+
         return service.forwardRequests( request );
     }
 

@@ -48,8 +48,8 @@ public class CommonGatewayService {
                 if (request.getUrl().getQuery() != null) {
                     resolvedServerPath = resolvedServerPath + "?" + request.getUrl().getQuery();
                 }
-                System.out.println( request.getHeaders() );
-                System.out.println( request.getHeaders().getContentType() );
+
+
                 if (request.getUrl().getPath().contains( "file" )) {
                     return restTemplate
                             .exchange( resolvedServerPath, request.getMethod(), request, Resource.class );
@@ -58,11 +58,13 @@ public class CommonGatewayService {
 
             final ResponseEntity<Object> exchange = restTemplate
                     .exchange( resolvedServerPath, request.getMethod(), request, Object.class );
-            System.out.println( "exchange" + exchange );
+
             return exchange;
         } catch (RestClientException e) {
-            System.out.println( "Exception  " + e.getMessage() );
-            return new ResponseEntity( HttpStatus.PRECONDITION_FAILED );
+            log.error( "Exception  " + e.getMessage() );
+            if (Objects.requireNonNull( e.getMessage() ).contains( "401" ))
+                return new ResponseEntity<>( HttpStatus.UNAUTHORIZED );
+            return new ResponseEntity<>( HttpStatus.PRECONDITION_FAILED );
         } catch (NullPointerException e) {
             return ResponseEntity.notFound().build();
         }
