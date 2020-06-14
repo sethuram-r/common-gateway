@@ -20,8 +20,8 @@ import java.util.Objects;
 public class CommonGatewayService {
 
 
-    private RestTemplate restTemplate;
-    private ServerConfigurations serverConfigurations;
+    private final RestTemplate restTemplate;
+    private final ServerConfigurations serverConfigurations;
 
     @Autowired
     CommonGatewayService(RestTemplate restTemplate, ServerConfigurations serverConfigurations) {
@@ -56,10 +56,8 @@ public class CommonGatewayService {
                 }
             }
 
-            final ResponseEntity<Object> exchange = restTemplate
-                    .exchange( resolvedServerPath, request.getMethod(), request, Object.class );
+            return restTemplate.exchange( resolvedServerPath, request.getMethod(), request, Object.class );
 
-            return exchange;
         } catch (RestClientException e) {
             log.error( "Exception  " + e.getMessage() );
             if (Objects.requireNonNull( e.getMessage() ).contains( "401" ))
