@@ -8,6 +8,8 @@ spring:
         jwt:
           issuer-uri: https://smartshare.eu.auth0.com/
 ---
+spring:
+  profiles: dev
 routes:
   servers:
     - name: coreserver
@@ -17,3 +19,14 @@ routes:
     - name: lockserver
       uri: http://localhost:8083
 ---
+
+spring:
+  profiles: prod
+routes:
+  servers:
+    - name: coreserver
+      uri: ${CORE-SERVER-URL}
+    - name: administrationserver
+      uri: ${ADMINISTRATION-SERVER-URL}
+    - name: lockserver
+      uri: ${LOCK-SERVER-URL}
