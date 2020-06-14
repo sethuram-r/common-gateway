@@ -1,4 +1,4 @@
-FROM openjdk:13-alpine
+FROM adoptopenjdk/openjdk13:jre-13.0.2_8-alpine
 LABEL maintainer = sethuram
 WORKDIR /usr/src/gateway
 ARG JAR_FILE=target/*.jar
