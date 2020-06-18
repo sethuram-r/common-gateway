@@ -25,8 +25,8 @@ spring:
 routes:
   servers:
     - name: coreserver
-      uri: ${CORE-SERVER-URL}
+      uri: ${CORE_SERVER_URL}
     - name: administrationserver
-      uri: ${ADMINISTRATION-SERVER-URL}
+      uri: ${ADMINISTRATION_SERVER_URL}
     - name: lockserver
-      uri: ${LOCK-SERVER-URL}
+      uri: ${LOCK_SERVER_URL}
