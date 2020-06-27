@@ -30,3 +30,16 @@ routes:
       uri: ${ADMINISTRATION_SERVER_URL}
     - name: lockserver
       uri: ${LOCK_SERVER_URL}
+
+---
+spring:
+  profiles: dev
+client:
+  uri: http://localhost:4200
+
+---
+spring:
+  profiles: prod
+client:
+  uri: ${FRONTEND_URL}
+
