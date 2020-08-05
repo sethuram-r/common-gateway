@@ -8,6 +8,11 @@ pipeline {
                   checkout scm
                }
          }
+      stage('Tools Check') {
+               steps {
+                  sh 'mvn -v'
+               }
+            }
       stage('Build Package') {
          steps {
             sh 'mvn clean install -DskipTests -Pproduction'
