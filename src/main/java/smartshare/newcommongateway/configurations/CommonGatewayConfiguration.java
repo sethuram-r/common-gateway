@@ -19,6 +19,7 @@ public class CommonGatewayConfiguration {
     @Autowired
     public CommonGatewayConfiguration(ClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
+        log.info( "Client Url : " + this.clientConfiguration.getUri() );
     }
 
 
