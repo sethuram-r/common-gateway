@@ -1,6 +1,10 @@
 pipeline {
    agent any
 
+     tools {
+      maven "maven 3.5.2"
+   }
+
    stages {
 
       stage('Checkout') {
@@ -19,14 +23,12 @@ pipeline {
          }
       }
       stage('Build Docker Image') {
-           steps {
-              sh 'docker image build -t sethuram975351/gateway:latest .'
+         steps {
+           docker.withRegistry("https://registry.hub.docker.com","dockerhub"){
+                def image = docker.build("sethuram975351/gateway:latest")
+                image.push()
            }
-      }
-      stage('Push to Docker Hub') {
-             steps {
-                sh 'docker  push sethuram975351/gateway:latest'
-             }
+         }
       }
 //       stage('Kubernetes Deployment') {
 //               steps {
