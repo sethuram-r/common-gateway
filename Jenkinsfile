@@ -22,20 +22,15 @@ pipeline {
                 sh 'mvn clean install -DskipTests -Pproduction'
             }
         }
-        stage('Build Docker Image') {
+        stage('Build and push Docker Image') {
             steps {
                 script {
                     docker.withRegistry("https://registry.hub.docker.com", "dockerhub") {
-                        def image = docker.build("sethuram975351/gateway:latest")
+                        def image = docker.build("sethuram975351/gateway:${env.BUILD_ID}")
                         image.push()
                     }
                 }
             }
         }
-//       stage('Kubernetes Deployment') {
-//               steps {
-//                 sh 'kubectl apply -f gateway-deployment.yaml'
-//               }
-//       }
     }
 }
