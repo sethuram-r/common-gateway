@@ -34,7 +34,10 @@ pipeline {
         }
         stage('Build Kubernetes Deployment') {
             steps {
-                sh 'kubectl version'
+                dir("/Users/sethuram/Desktop/terraform/k8s") {
+                    sh 'kubectl apply -f gateway-deployment.yaml'
+                }
+
             }
         }
     }
