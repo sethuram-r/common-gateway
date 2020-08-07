@@ -26,10 +26,15 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://registry.hub.docker.com", "dockerhub") {
-                        def image = docker.build("sethuram975351/gateway:${env.BUILD_ID}")
+                        def image = docker.build("sethuram975351/gateway:latest")
                         image.push()
                     }
                 }
+            }
+        }
+        stage('Build Kubernetes Deployment') {
+            steps {
+                sh 'kubectl version'
             }
         }
     }
