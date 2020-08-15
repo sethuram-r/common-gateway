@@ -1,5 +1,7 @@
 package smartshare.newcommongateway.controller;
 
+
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
@@ -16,12 +18,13 @@ import smartshare.newcommongateway.services.CommonGatewayService;
 public class CommonGatewayController {
 
     private final CommonGatewayService service;
+    private final MeterRegistry registry;
 
     @Autowired
-    public CommonGatewayController(CommonGatewayService service) {
+    public CommonGatewayController(CommonGatewayService service, MeterRegistry registry) {
         this.service = service;
+        this.registry = registry;
     }
-
 
     @RequestMapping(
             value = "**",
@@ -29,8 +32,13 @@ public class CommonGatewayController {
     )
     public ResponseEntity forwardRequests(RequestEntity request) {
         log.info( "In forwardRequests" );
-
-        return service.forwardRequests( request );
+        final ResponseEntity responseEntity = service.forwardRequests( request );
+        registry.counter( "incoming.gateway.response",
+                "path", request.getUrl().getPath(),
+                "method", request.getMethod().toString(),
+                "status", String.valueOf( responseEntity.getStatusCodeValue() )
+        ).increment();
+        return responseEntity;
     }
 
 }

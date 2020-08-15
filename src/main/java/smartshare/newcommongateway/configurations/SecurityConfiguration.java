@@ -23,7 +23,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.cors();
         http.authorizeRequests()
-//                    .mvcMatchers("/api/public").permitAll()
+                .mvcMatchers( "/actuator/**" ).permitAll()
                 .mvcMatchers( "/**" ).authenticated()
                 .mvcMatchers( "/**" ).hasAuthority( "SCOPE_smartshare-user" )
                 .and()
